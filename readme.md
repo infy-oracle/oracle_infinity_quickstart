@@ -1,6 +1,6 @@
-# Oracle Infinity Demo Commerce Site
+# Oracle Infinity Demo Commerce Site
 
-## Deploying your Demo Site
+## Deploying your Demo Site
 
 **Step 1**
 
