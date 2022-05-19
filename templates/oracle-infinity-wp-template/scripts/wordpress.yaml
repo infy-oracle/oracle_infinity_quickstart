@@ -1,0 +1,103 @@
+# Copyright (c) 2021 Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+# 
+version: '3.3'
+services:
+  db:
+    image: mysql:5.7
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${mysql_root_password}
+      MYSQL_DATABASE: ${wp_schema}
+      MYSQL_USER: ${wp_db_user}
+      MYSQL_PASSWORD: ${wp_db_password}
+
+  wordpress:
+    depends_on:
+      - db
+    image: wordpress:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: always
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: ${wp_db_user}
+      WORDPRESS_DB_PASSWORD: ${wp_db_password}
+      WORDPRESS_DB_NAME: ${wp_schema}
+      CX_TAG_URL: ${cx_tag_endpoint}
+    volumes:
+      - wp_data:/var/www/html
+  wordpress-cli:
+    depends_on:
+      - db
+      - wordpress
+    image: wordpress:cli
+    user: xfs
+    command: >
+      /bin/sh -c '
+        until wp core install --path="/var/www/html" --url="http://${wp_site_url}" --title="WordPress on OCI" --admin_user=${wp_admin_user} --admin_password=${wp_admin_password} --admin_email=foo@bar.com; do
+          echo "WordPress not ready, retrying in 10 seconds..."
+          sleep 10;
+        done
+        echo "IMPORT PROCESS BEGINNING..."
+
+        echo "WordPress initialized..."
+        echo "IMPORT PROCESS BEGINNING..."        
+
+        echo "Copying required files from oracle_infinity_quickstart repo to repo_files"        
+        mkdir repo_files
+        curl -L https://github.com/rgonsalk-oracle/oracle_infinity_quickstart/blob/main/backups/wp-content.tar.gz?raw=true -o repo_files/wp-content.tar.gz
+        echo "...copied as wp-content.tar.gz"
+        curl -L https://raw.githubusercontent.com/rgonsalk-oracle/oracle_infinity_quickstart/main/backups/db-backup.sql -o repo_files/db_backup.sql
+        echo "...copied as db_backup.sql"
+
+        echo "Overwriting wp-content files with downloaded wp-content.tar.gz"
+        tar -xf repo_files/wp-content.tar.gz -C .
+
+        echo "importing db"
+        wp db import repo_files/db_backup.sql
+        
+        echo "Creating temp user to move posts to..."
+        tempuser=`wp user create my_temp_user temp_user@temp.com --role=administrator --porcelain`
+
+        echo "temp user below:"
+        echo "$$tempuser"        
+
+        echo "Delete existing user and move posts to them..."
+        wp user delete admin --reassign=$$tempuser
+
+        echo "Creating new required user..."
+        newadmin=`wp user create ${wp_admin_user} CHANGEMEPASSWORD@DOMAIN.com --user_pass=${wp_admin_password} --role=administrator --display_name=Administrator --porcelain`
+
+        echo "Delete temp user and move posts to new administrator..."
+        echo "Delete existing user and move posts to them..."
+        wp user delete my_temp_user --reassign=$$newadmin
+
+        echo "Changing IP addresses..."        
+        wp search-replace 129.80.40.121 ${wp_site_url}
+
+        echo "Overwrite CX Tag Endpoint..."
+        cx_tag_url=${cx_tag_endpoint}
+
+        sed -i "s#//d.oracleinfinity.io/infy/acs/account/b59bcd0d4222919be053ae14000af122/js/maxymiser_quick_start/odc.js#$$cx_tag_url#g" wp-content/themes/storefront/header.php
+        
+        echo "IMPORT PROCESS COMPLETED..."
+        
+        echo "Cleaning up..."
+        rm -r repo_files        
+      '
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: ${wp_db_user}
+      WORDPRESS_DB_PASSWORD: ${wp_db_password}
+      WORDPRESS_DB_NAME: ${wp_schema}
+      CX_TAG_URL: ${cx_tag_endpoint}
+    # vstm: add shared volume
+    volumes:
+      - wp_data:/var/www/html
+volumes:
+    db_data: {}
+    wp_data: {}
