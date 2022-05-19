@@ -1,8 +1,8 @@
 # Copyright (c) 2021 Oracle and/or its affiliates. All rights reserved.
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 # 
-title: "Deploy a containerized WordPress instance on OCI"
-description: "Deploy containerized WordPress & MySQL on OCI using a single compute instance. "
+title: "Deploy your Oracle Infinity Commerce Demo Website on OCI"
+description: "Deploys a demo website on your Oracle Cloud Infrastructure with Oracle Infinity fully implemented. "
 schemaVersion: 1.1.0
 version: "20190304"
 locale: "en"
@@ -17,7 +17,7 @@ variableGroups:
   - linux_os_version
   - label_prefix
 
-- title: WordPress Configuration
+- title: Site Configuration
   visible: true  
   variables:
     - cx_tag_endpoint
@@ -69,12 +69,12 @@ outputGroups:
 outputs:
   wordpress_public_ip:
     type: link
-    title: Your WordPress website
-    description: Open WordPress website
+    title: Your website
+    description: Open website
   wordpress_admin_url:
     type: link
-    title: WordPress Login
-    description: Login to your WordPress installation.
+    title: Admin Login
+    description: Login as admin to your website.
   generated_ssh_private_key:
     title: "Generated SSH Private Key"
     description: "Generated SSH Private Key"
