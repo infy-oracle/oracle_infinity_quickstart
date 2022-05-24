@@ -12,7 +12,7 @@ docker exec opc_db_1 env
 docker exec -it opc_db_1 /bin/bash
 
 ## Dump DB
-mysqldump -uwp -p'QBThK5Z5h_Ykkgr5' wordpress > db-backup.sql --no-tablespaces
+mysqldump -uMYSQL_USER -p'MYSQL_PASSWORD' MYSQL_DATABASE > db-backup.sql --no-tablespaces
 exit
 
 ## Copy to instance
