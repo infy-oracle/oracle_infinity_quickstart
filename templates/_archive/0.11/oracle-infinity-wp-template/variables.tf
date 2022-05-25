@@ -26,13 +26,13 @@ variable "vcn_cidr" {
 ## Instance
 
 variable "instance_shape" {
-  default = "VM.Standard.A1.Flex"
+  default = "VM.Standard.E3.Flex"
 }
 variable "instance_ocpus" {
   default = 1
 }
 variable "instance_shape_config_memory_in_gbs" {
-  default = 1
+  default = 16
 }
 
 variable "label_prefix" {

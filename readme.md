@@ -4,7 +4,7 @@
 
 **Step 1**
 
-Sign up for a [Oracle Cloud Infrastructure Free Tier](https://www.oracle.com/cloud/free/)
+Sign up for a [Oracle Cloud Infrastructure Free Tier](https://www.oracle.com/cloud/free/).
 
 **Step 2**
 
