@@ -2,7 +2,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 # 
 title: "Deploy your Oracle Infinity Commerce Demo Website on OCI"
-description: "Deploys a demo website on your Oracle Cloud Infrastructure with Oracle Infinity fully implemented. "
+description: "Deploys a demo website on your Oracle Cloud Infrastructure with Oracle Infinity fully implemented. By default, this only uses FREE TIER resources so you should not incur any charges."
 schemaVersion: 1.1.0
 version: "20190304"
 locale: "en"
